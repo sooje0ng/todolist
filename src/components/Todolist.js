@@ -4,15 +4,13 @@ import { IoIosAddCircleOutline } from "react-icons/io";
 import { BiTrash } from "react-icons/bi";
 import { BsPencilSquare } from "react-icons/bs";
 import { BsCheck2 } from "react-icons/bs";
+import { FcCheckmark } from "react-icons/fc";
 
 function Todolist() {
     //1. 예쁘게 꾸미기
     //2. 삭제
     //3. 수정
     //4. 완료한 일정 체크
-    //5. 브라우저를 종요했다가 들어와도 유지되기.
-    //6. 기간 내 완료하지 못한 일정 dim처리
-    //7. 덜끝낸 일정 세모표시
 
     const [text, setText] = useState("");
     const [todolist, setTodolist] = useState([]);
@@ -34,7 +32,10 @@ function Todolist() {
         for (let i = 0; i < todolist.length; i++) {
             newTodolist[i] = todolist[i];
         }
-        newTodolist[count] = text;
+        newTodolist[count] = {
+            todo: text,
+            complete: false,
+        };
         setCount(count + 1);
         setTodolist(newTodolist);
         setText("");
@@ -72,7 +73,10 @@ function Todolist() {
         const newTodolist = [];
         for (let i = 0; i < todolist.length; i++) {
             if (i === index) {
-                newTodolist[i] = editText;
+                newTodolist[i] = {
+                    todo: editText,
+                    complete: todolist[i].complete,
+                };
                 continue;
             }
             newTodolist[i] = todolist[i];
@@ -82,6 +86,20 @@ function Todolist() {
         setEditText("");
     };
 
+    const completeTodo = (index) => {
+        const newTodolist = [];
+        for (let i = 0; i < todolist.length; i++) {
+            if (i === index) {
+                newTodolist[i] = {
+                    todo: todolist[i].todo,
+                    complete: !todolist[i].complete,
+                };
+                continue;
+            }
+            newTodolist[i] = todolist[i];
+        }
+        setTodolist(newTodolist);
+    };
     return (
         <div className="Todolist">
             <div className="Header">
@@ -102,11 +120,28 @@ function Todolist() {
                         {index === editIndex ? (
                             <input
                                 className="editInput"
-                                defaultValue={value}
                                 onKeyUp={(input) => editValue(input, index)}
+                                defaultValue={value.todo}
                             />
                         ) : (
-                            value
+                            <div className="todoInner">
+                                <FcCheckmark
+                                    onClick={() => completeTodo(index)}
+                                    style={{ marginRight: 10 }}
+                                />
+                                <p
+                                    style={
+                                        value.complete
+                                            ? {
+                                                  textDecorationLine:
+                                                      "line-through",
+                                              }
+                                            : {}
+                                    }
+                                >
+                                    {value.todo}
+                                </p>
+                            </div>
                         )}
                         <div className="icons">
                             {index === editIndex ? (
